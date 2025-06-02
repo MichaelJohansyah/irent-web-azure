@@ -1,4 +1,4 @@
-# Laravel + React Starter Kit
+# WAJIB BACA KALAU MAU RUN PROJECT
 
 This project is a starter kit using **Laravel** (backend) and **React** (frontend) with **Inertia.js** and **Vite**.  
 It supports authentication, MySQL database, and is ready for local development on Windows (with or without Laragon).
@@ -92,6 +92,7 @@ npm run dev
 ```
 - The frontend will be available at the URL shown in the terminal (usually [http://localhost:5173](http://localhost:5173)).
 
+- Jangan lupa dua command ini harus dijalankan sama-sama di terminal yang berbeda ya.
 ---
 
 ## 6. Authentication
