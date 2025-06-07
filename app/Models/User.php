@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'phone',
+        'ktp_photo',
+        'address',
+        'is_verified',
     ];
 
     /**
@@ -44,5 +49,47 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+        // A user (partner) can have many products
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'partner_id');
+    }
+
+    // A user (customer) can have many orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    // A user (partner) can have many orders as a partner
+    public function partnerOrders()
+    {
+        return $this->hasMany(Order::class, 'partner_id');
+    }
+
+    // A user can have many messages sent
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'from_user_id');
+    }
+
+    // A user can have many messages received
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'to_user_id');
+    }
+
+    // A user can have many notifications
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    // A user can have many feedbacks
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
     }
 }
