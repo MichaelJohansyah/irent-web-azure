@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::with('partner')->findOrFail($id);
-        return Inertia::render('Products/Show', ['product' => $product]);
+        return Inertia::render('product_detail', ['product' => $product]);
     }
 
     // (Optional) Add methods for create, store, edit, update, destroy as needed

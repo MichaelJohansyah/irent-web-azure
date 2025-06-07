@@ -10,14 +10,13 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    // Dashboard now shows products
+    Route::get('dashboard', [ProductController::class, 'index'])->name('dashboard');
+    // Product detail page
+    Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show');
 });
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/dashboard', [ProductController::class, 'index'])->name('dashboard');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
 
