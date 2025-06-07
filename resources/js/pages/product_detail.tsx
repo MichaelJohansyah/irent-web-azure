@@ -3,6 +3,8 @@ interface Product {
   description: string;
   type: string;
   price_per_day?: number;
+  image: string;
+
   // Add more fields as needed
 }
 
@@ -17,6 +19,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <p>{product.description}</p>
       <p>Type : {product.type}</p>
       <p>Price : Rp{product.price_per_day}</p>
+      <img src={`/images/products/${product.image}`} alt={product.name} style={{ width: 200, height: 'auto' }}/>
       {/* Add more product info here */}
     </div>
   );
