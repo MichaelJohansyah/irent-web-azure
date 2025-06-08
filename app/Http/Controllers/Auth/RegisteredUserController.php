@@ -32,19 +32,37 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'ktp_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        // Handle KTP photo upload
+        $ktpPhotoPath = null;
+        if ($request->hasFile('ktp_photo')) {
+            $ktpPhotoPath = $request->file('ktp_photo')->store('ktp_photos', 'public');
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'ktp_photo' => $ktpPhotoPath,
             'password' => Hash::make($request->password),
+            'is_verified' => false, // User must be verified by admin
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        // Redirect to a waiting-for-verification page if not verified
+        if (!$user->is_verified) {
+            return to_route('verification.wait');
+        }
 
         return to_route('dashboard');
     }
