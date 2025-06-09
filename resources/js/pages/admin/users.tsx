@@ -25,15 +25,15 @@ export default function AdminUsers({ users }: AdminUsersProps) {
         <div className="p-8">
             <Head title="User Verification" />
             <h1 className="mb-4 text-2xl font-bold">Unverified Users</h1>
-            <table className="w-full border">
+            <table className="w-full border text-left">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>KTP Photo</th>
-                        <th>Action</th>
+                        <th className="px-3 py-2 font-semibold text-left">Name</th>
+                        <th className="px-3 py-2 font-semibold text-left">Email</th>
+                        <th className="px-3 py-2 font-semibold text-left">Phone</th>
+                        <th className="px-3 py-2 font-semibold text-left">Address</th>
+                        <th className="px-3 py-2 font-semibold text-left">KTP Photo</th>
+                        <th className="px-3 py-2 font-semibold text-left">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,7 +46,7 @@ export default function AdminUsers({ users }: AdminUsersProps) {
                                 <td>{user.phone}</td>
                                 <td>{user.address}</td>
                                 <td>
-                                    <a href={user.ktp_photo ? `/storage/${user.ktp_photo}` : '#'} target="_blank" rel="noopener noreferrer">
+                                    <a href={user.ktp_photo ? `/storage/ktp_photos/${user.ktp_photo.split('/').pop()}` : '#'} target="_blank" rel="noopener noreferrer">
                                         View
                                     </a>
                                 </td>
