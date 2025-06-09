@@ -29,11 +29,30 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $request->ensureIsNotRateLimited();
 
-        $request->session()->regenerate();
+        // Attempt to authenticate
+        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            \Illuminate\Support\Facades\RateLimiter::hit($request->throttleKey());
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Check if user is verified
+        if (Auth::user()->is_verified == false) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return back()->withErrors([
+                'email' => 'Your account is pending verification by admin.'
+            ]);
+        }else{
+            $request->session()->regenerate();
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        
     }
 
     /**

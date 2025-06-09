@@ -14,15 +14,12 @@ class RedirectUnverifiedUsers
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check() && Auth::user()->is_verified === false) {
-            // Allow only register, login, and verification.wait routes by route name
-            $allowedRouteNames = [
-                'verification.wait',
-                // You may add 'logout' if you have a named route for it
-            ];
-            $currentRouteName = $request->route() ? $request->route()->getName() : null;
-            if (!in_array($currentRouteName, $allowedRouteNames, true)) {
-                return redirect()->route('verification.wait');
-            }
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->withErrors([
+                'email' => 'Your account is pending verification by admin.'
+            ]);
         }
         return $next($request);
     }

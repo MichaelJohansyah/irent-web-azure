@@ -57,13 +57,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        // Redirect to a waiting-for-verification page if not verified
+        // Do not log in the user if not verified
         if (!$user->is_verified) {
-            return to_route('verification.wait');
+            return redirect()->route('login')->with('status', 'Registration successful! Please wait for admin verification before logging in.');
+        }else{
+            // If the user is already verified, log them in
+            Auth::login($user);
+            return to_route('dashboard');
         }
-
-        return to_route('dashboard');
     }
 }

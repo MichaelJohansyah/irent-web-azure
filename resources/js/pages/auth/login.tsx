@@ -104,6 +104,22 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 </div>
             </form>
 
+            {/* Show error popup if account is not verified */}
+            {errors.email === 'Your account is pending verification by admin.' && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-full max-w-sm rounded-lg bg-white p-8 text-center shadow-lg border border-gray-300">
+                        <h2 className="mb-2 text-lg font-bold text-red-600">Account Pending Verification</h2>
+                        <p className="mb-4 text-gray-800">
+                            Your registration was successful, but your account must be verified by an admin before you can log in.<br />
+                            Please check back later. If you need urgent access, contact support or the admin team.
+                        </p>
+                        <Button onClick={() => window.location.reload()} className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold">
+                            OK
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
         </AuthLayout>
     );

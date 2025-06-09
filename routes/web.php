@@ -34,9 +34,6 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
-Route::get('/verification/wait', function () {
-    return Inertia::render('verification/wait');
-})->name('verification.wait');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
