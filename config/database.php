@@ -94,10 +94,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'), // Important for Neon
-            'options' => extension_loaded('pdo_pgsql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'sslmode' => env('DB_SSLMODE', 'require'), // Neon typically requires SSL
+            'options' => [], // Add any PostgreSQL specific PDO options here if needed
         ],
 
         'sqlsrv' => [
