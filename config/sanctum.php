@@ -34,7 +34,10 @@ return [
     |
     */
 
-    'guard' => ['web'],
+    // Setting 'guard' to an empty array or null means Sanctum will only
+    // attempt to authenticate via bearer tokens for 'auth:sanctum' routes,
+    // and will not fall back to session-based authentication (like the 'web' guard).
+    'guard' => [], // or null
 
     /*
     |--------------------------------------------------------------------------
