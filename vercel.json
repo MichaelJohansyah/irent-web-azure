@@ -2,7 +2,12 @@
     "version": 2,
     "framework": null,
     "functions": {
-        "api/index.php": { "runtime": "vercel-php@0.7.3" }
+        "api/index.php": {
+            "runtime": "vercel-php@0.7.3",
+            "config": {
+                "buildCommands": ["php artisan migrate --force"]
+            }
+        }
     },
     "routes": [
         {
@@ -27,6 +32,7 @@
         "APP_SERVICES_CACHE": "/tmp/services.php",
         "VIEW_COMPILED_PATH": "/tmp",
 
+        "CACHE_STORE": "array",
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie"
