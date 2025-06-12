@@ -4,11 +4,17 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
+
+Route::get('/token', function (Request $request) {
+    $token = $request->session()->token();
+    $token = csrf_token();
+    return Inertia::render('Token', ['token' => $token]);
+})->name('token');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard now shows products

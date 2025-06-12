@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'api/*',
+            'https://irent-web-delta.vercel.app/api/*',
         ]);
         
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
