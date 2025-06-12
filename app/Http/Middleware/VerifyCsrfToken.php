@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/*', // Exclude all routes starting with /api from CSRF protection
+        'https://irent-web-delta.vercel.app/api/login', // Exclude all routes starting with /api from CSRF protection
     ];
 }
