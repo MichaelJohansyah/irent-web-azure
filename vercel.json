@@ -1,20 +1,23 @@
 {
     "version": 2,
     "framework": null,
+    "functions": {
+        "api/index.php": { "runtime": "vercel-php@0.7.3" }
+    },
     "builds": [
         {
-            "src": "api/index.php",
+            "src": "public/index.php",
             "use": "@vercel/php"
         },
         {
-            "src": "public",
+            "src": "public/**",
             "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/(.*\\.(?:css|js|png|jpg|jpeg|gif|svg|ico|ttf|woff|woff2|eot|otf|webp|avif|txt))$",
-            "dest": "/$1"
+            "dest": "/public/$1"
         },
         {
             "src": "/(.*)",
@@ -23,7 +26,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_URL": "https://irent-web-michael-johansyahs-projects.vercel.app",
         "APP_KEY": "base64:ABgRE/G+sHSpCR//4QxXcAkCmXSY9dQHbaOHAX/LcF8=",
 
