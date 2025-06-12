@@ -27,7 +27,7 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://irent-web-delta.vercel.app",
+        "APP_URL": "https://irent-web-michael-johansyahs-projects.vercel.app",
         "APP_KEY": "base64:ABgRE/G+sHSpCR//4QxXcAkCmXSY9dQHbaOHAX/LcF8=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
