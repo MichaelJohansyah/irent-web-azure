@@ -37,6 +37,7 @@ class RegisteredUserController extends Controller
             'address' => 'required|string|max:255',
             'ktp_photo' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => 'required|in:customer,partner',
         ]);
 
         // Handle KTP photo upload
@@ -53,6 +54,7 @@ class RegisteredUserController extends Controller
             'ktp_photo' => $ktpPhotoPath,
             'password' => Hash::make($request->password),
             'is_verified' => false, // User must be verified by admin
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));

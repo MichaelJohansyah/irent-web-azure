@@ -17,6 +17,7 @@ type RegisterForm = {
     ktp_photo: File | null;
     password: string;
     password_confirmation: string;
+    role: 'customer' | 'partner';
 };
 
 export default function Register() {
@@ -28,6 +29,7 @@ export default function Register() {
         ktp_photo: null,
         password: '',
         password_confirmation: '',
+        role: 'customer',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -152,6 +154,22 @@ export default function Register() {
                             placeholder="Confirm password"
                         />
                         <InputError message={errors.password_confirmation} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="role">Register as</Label>
+                        <select
+                            id="role"
+                            value={data.role}
+                            onChange={(e) => setData('role', e.target.value as 'customer' | 'partner')}
+                            className="rounded border px-3 py-2"
+                            disabled={processing}
+                            required
+                        >
+                            <option value="customer">Customer</option>
+                            <option value="partner">Partner</option>
+                        </select>
+                        <InputError message={errors.role} className="mt-2" />
                     </div>
 
                     <Button type="submit" className="mt-2 w-full" tabIndex={8} disabled={processing}>
