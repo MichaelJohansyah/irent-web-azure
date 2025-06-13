@@ -36,6 +36,14 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->back();
         })->name('admin.users.verify');
     });
+
+    // Partner-only routes
+    Route::middleware(['partner'])->group(function () {
+        Route::get('dashboard/add-product', function () {
+            return Inertia::render('dashboard/AddProduct');
+        })->name('products.add');
+        Route::post('dashboard/add-product', [ProductController::class, 'store'])->name('products.store');
+    });
 });
 
 // Public product routes

@@ -40,12 +40,13 @@ export default function AddProduct() {
                     </div>
                     <label className="w-full">
                         <input
+                            id="product-image"
                             type="file"
                             accept="image/*"
                             className="hidden"
                             onChange={e => setData('image', e.target.files ? e.target.files[0] : null)}
                         />
-                        <Button type="button" className="w-full" variant="secondary" onClick={() => document.querySelector<HTMLInputElement>('#product-image')?.click()}>
+                        <Button type="button" className="w-full" variant="secondary" onClick={() => document.getElementById('product-image')?.click()}>
                             Add Product Image
                         </Button>
                     </label>

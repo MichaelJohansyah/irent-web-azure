@@ -13,7 +13,7 @@ export function AppSidebar() {
     const isPartner = userRole === 'partner';
     const isAdmin = userRole === 'admin';
     const partnerNavItems = [
-        { title: 'Add Product', href: '#', icon: MessageCircle },
+        { title: 'Add Product', href: '/dashboard/add-product', icon: MessageCircle },
         { title: 'Check Notification', href: '#', icon: Bell },
         { title: 'Chat', href: '#', icon: MessageCircle },
         { title: 'Order List', href: '#', icon: ListOrdered },
