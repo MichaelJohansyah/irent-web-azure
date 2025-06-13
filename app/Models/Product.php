@@ -7,21 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-    'partner_id',
-    'name',
-    'type',
-    'description',
-    'price_per_day',
-    'max_duration',
-    'stock',
-    'specs',
-    'color_options',
-    'image',
-];
+        'partner_id',
+        'name',
+        'description',
+        'storage',
+        'color',
+        'rent_price',
+        'max_rent_day',
+        'stock',
+        'image',
+    ];
 
     protected $casts = [
-        'specs' => 'array',
-        'color_options' => 'array',
+        // Remove specs and color_options casts
     ];
 
     public function partner()
