@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -11,8 +12,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    // Dashboard now shows products
-    Route::get('dashboard', [ProductController::class, 'index'])->name('dashboard');
+    // Dashboard now shows products and routes to the correct dashboard by role
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Product detail page
     Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show');
 
