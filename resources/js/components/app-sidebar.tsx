@@ -1,34 +1,43 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Bell, LayoutGrid, ListOrdered, MessageCircle, Repeat } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
 export function AppSidebar() {
+    const { props } = usePage();
+    const user = props.user || {};
+    const userRole = user && typeof user === 'object' && 'role' in user ? user.role : undefined;
+    const isCustomer = userRole === 'customer';
+    const isPartner = userRole === 'partner';
+    const isAdmin = userRole === 'admin';
+    const partnerNavItems = [
+        { title: 'Add Product', href: '#', icon: MessageCircle },
+        { title: 'Check Notification', href: '#', icon: Bell },
+        { title: 'Chat', href: '#', icon: MessageCircle },
+        { title: 'Order List', href: '#', icon: ListOrdered },
+        { title: 'Switch to Customer', href: '#', icon: Repeat },
+    ];
+    const adminNavItems = [{ title: 'Manage Unverified Users', href: '/admin/users', icon: Bell }];
+    const mainNavItems = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+            icon: LayoutGrid,
+        },
+        ...(isCustomer
+            ? [
+                  { title: 'Chat', href: '#', icon: MessageCircle },
+                  { title: 'Order List', href: '#', icon: ListOrdered },
+                  { title: 'Notification', href: '#', icon: Bell },
+                  { title: 'Switch to Partner', href: '#', icon: Repeat },
+              ]
+            : []),
+        ...(isPartner ? partnerNavItems : []),
+        ...(isAdmin ? adminNavItems : []),
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -48,7 +57,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
