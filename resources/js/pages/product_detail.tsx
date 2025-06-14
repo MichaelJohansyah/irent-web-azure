@@ -1,4 +1,5 @@
 interface Product {
+    id: number;
     name: string;
     description: string;
     storage: string;
@@ -13,6 +14,8 @@ interface Product {
 interface ProductDetailProps {
     product: Product;
 }
+
+import { Link } from "@inertiajs/react";
 
 export default function ProductDetail({ product }: ProductDetailProps) {
     return (
@@ -50,8 +53,17 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 </div>
                 <div>
                     <div className="mb-1 font-semibold">Description</div>
-                    <div className="bg-muted text-foreground max-h-40 overflow-y-auto rounded p-3 whitespace-pre-line">{product.description}</div>
+                    <div className="bg-muted text-foreground max-h-40 overflow-y-auto rounded p-3 whitespace-pre-line">
+                        {product.description}
+                    </div>
                 </div>
+
+                {/* Tombol Order */}
+                <Link
+                    href={route('products.confirm', product.id)}
+                    className="bg-blue-500 text-gray-50 px-4 py-2 rounded-md font-semibold hover:bg-blue-600 transition">
+                    Order
+                </Link>
             </div>
         </div>
     );

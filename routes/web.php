@@ -49,7 +49,9 @@ Route::middleware(['auth'])->group(function () {
 // Public product routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
+//Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
+Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm')->middleware('auth');
+
 
 // Additional route files
 require __DIR__.'/settings.php';
