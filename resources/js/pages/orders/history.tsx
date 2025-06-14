@@ -39,24 +39,21 @@ export default function History({ orders }: HistoryProps) {
                 <h1 className="mb-6 text-2xl font-semibold">Order List</h1>
                 <div className="space-y-4">
                     {orders.map((order) => (
-                        <div key={order.id} className="rounded-lg bg-white p-4 shadow">
-                            <div className="flex items-center gap-4">
-                                {order.product ? (
-                                    <img src={order.product.image} alt={order.product.name} className="h-24 w-24 rounded-md object-cover" />
-                                ) : (
-                                    <div className="flex h-24 w-24 items-center justify-center rounded-md bg-gray-200 text-gray-400">No Image</div>
-                                )}
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold">{order.product ? order.product.name : 'Product not found'}</h3>
-                                    {order.customer && <p className="font-medium text-gray-700">Customer: {order.customer.name}</p>}
-                                    <p className="text-gray-600">
-                                        {new Date(order.start_date).toLocaleDateString()} - {new Date(order.end_date).toLocaleDateString()}
-                                    </p>
-                                    <p className="text-gray-600">{order.duration} hari</p>
-                                    <p className="font-semibold">Rp{order.total_price.toLocaleString()}</p>
-                                    <span className={`inline-block rounded-full px-2 py-1 text-sm ${getStatusBadgeColor(order.status)}`}>
-                                        {order.status}
-                                    </span>
+                        <div key={order.id} className="rounded-xl bg-card text-foreground p-4 shadow border border-sidebar-border/70 flex flex-col md:flex-row gap-4 items-center">
+                            {order.product ? (
+                                <img src={order.product.image ? `/storage/${order.product.image}` : '/images/products/default.png'} alt={order.product.name} className="h-24 w-24 rounded-lg object-cover border border-muted" />
+                            ) : (
+                                <div className="flex h-24 w-24 items-center justify-center rounded-lg bg-muted text-muted-foreground border border-muted">No Image</div>
+                            )}
+                            <div className="flex-1 flex flex-col gap-1">
+                                <h3 className="text-lg font-bold text-foreground mb-1">{order.product ? order.product.name : 'Product not found'}</h3>
+                                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                                    <span>{new Date(order.start_date).toLocaleDateString()} - {new Date(order.end_date).toLocaleDateString()}</span>
+                                    <span>{order.duration} days</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="font-bold text-primary text-base">Rp{order.total_price.toLocaleString()}</span>
+                                    <span className={`inline-block rounded-full px-2 py-1 text-xs font-medium ml-2 ${getStatusBadgeColor(order.status)}`}>{order.status}</span>
                                 </div>
                             </div>
                         </div>
