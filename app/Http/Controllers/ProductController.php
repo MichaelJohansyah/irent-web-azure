@@ -59,7 +59,7 @@ class ProductController extends Controller
     public function confirm($id)
     {
         $product = Product::with('partner')->findOrFail($id);
-        return Inertia::render('products/Confirm', [
+        return Inertia::render('products/confirm', [
             'product' => $product,  
         ]);
     }
