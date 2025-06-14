@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { Eye, EyeOff, LoaderCircle, User, Mail, Phone, MapPin, Upload, Lock, AlertCircle } from 'lucide-react';
+import { FormEventHandler, useState } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -20,6 +20,106 @@ type RegisterForm = {
     role: 'customer' | 'partner';
 };
 
+type InputFieldProps = {
+    icon: React.ElementType;
+    type?: string;
+    placeholder?: string;
+    value?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    error?: string;
+    showPassword?: boolean;
+    togglePassword?: () => void;
+    accept?: string;
+    className?: string;
+    [key: string]: any;
+};
+
+const InputField = ({ 
+    icon: Icon, 
+    type = "text", 
+    placeholder, 
+    value, 
+    onChange, 
+    error, 
+    showPassword, 
+    togglePassword,
+    accept,
+    className = "",
+    ...props 
+}: InputFieldProps) => (
+    <div className="space-y-2">
+        <div className="relative group">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-200 z-10">
+                <Icon size={18} />
+            </div>
+            <input
+                type={type}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+                accept={accept}
+                className={`w-full pl-12 pr-4 py-3.5 bg-muted/30 border-0 rounded-lg focus:bg-background focus:ring-2 focus:ring-primary/20 focus:shadow-lg transition-all duration-300 placeholder:text-muted-foreground text-foreground ${
+                    error ? 'ring-2 ring-destructive/50 bg-destructive/5' : ''
+                } ${type === 'password' ? 'pr-12' : ''} ${className}`}
+                {...props}
+            />
+            {type === 'password' && (
+                <button
+                    type="button"
+                    onClick={togglePassword}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors z-10"
+                >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+            )}
+        </div>
+        {error && (
+            <div className="flex items-center gap-2 text-destructive text-sm pl-4">
+                <AlertCircle size={14} />
+                {error}
+            </div>
+        )}
+    </div>
+);
+
+type SelectFieldProps = {
+    icon: React.ElementType;
+    value: string;
+    onChange: React.ChangeEventHandler<HTMLSelectElement>;
+    error?: string;
+    children: React.ReactNode;
+    [key: string]: any;
+};
+
+const SelectField = ({ icon: Icon, value, onChange, error, children, ...props }: SelectFieldProps) => (
+    <div className="space-y-2">
+        <div className="relative">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none z-10">
+                <Icon size={18} />
+            </div>
+            <select
+                value={value}
+                onChange={onChange}
+                className="w-full pl-12 pr-4 py-3.5 bg-muted/30 border-0 rounded-lg focus:bg-background focus:ring-2 focus:ring-primary/20 focus:shadow-lg transition-all duration-300 text-foreground appearance-none cursor-pointer"
+                {...props}
+            >
+                {children}
+            </select>
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="text-muted-foreground" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        {error && (
+            <div className="flex items-center gap-2 text-destructive text-sm pl-4">
+                <AlertCircle size={14} />
+                {error}
+            </div>
+        )}
+    </div>
+);
+
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<RegisterForm>({
         name: '',
@@ -32,159 +132,154 @@ export default function Register() {
         role: 'customer',
     });
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route('register'), {
             onFinish: () => reset('password', 'password_confirmation'),
-            forceFormData: true, // Important for file upload
+            forceFormData: true,
         });
     };
 
     return (
-        <AuthLayout title="Create an account" description="Enter your details below to create your account">
+        <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-secondary/20 flex items-center justify-center p-4">
             <Head title="Register" />
-            <form className="flex flex-col gap-6" onSubmit={submit} encType="multipart/form-data">
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            type="text"
-                            required
-                            autoFocus
-                            tabIndex={1}
-                            autoComplete="name"
+            
+            <div className="w-full max-w-md">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <div className="w-16 h-16 bg-gradient-to-br from-chart-1 to-chart-2 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <User className="text-white" size={28} />
+                    </div>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Create Account</h1>
+                    <p className="text-muted-foreground">Join us and start your journey</p>
+                </div>
+
+                {/* Form Card */}
+                <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-xl border border-border/50 p-8">
+                    <div className="space-y-5" onSubmit={submit}>
+                        <InputField
+                            icon={User}
+                            placeholder="Full name"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
-                            disabled={processing}
-                            placeholder="Full name"
-                        />
-                        <InputError message={errors.name} className="mt-2" />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
-                        <Input
-                            id="email"
-                            type="email"
+                            error={errors.name}
                             required
-                            tabIndex={2}
-                            autoComplete="email"
+                            autoFocus
+                            autoComplete="name"
+                            disabled={processing}
+                        />
+
+                        <InputField
+                            icon={Mail}
+                            type="email"
+                            placeholder="Email address"
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
-                            disabled={processing}
-                            placeholder="email@example.com"
-                        />
-                        <InputError message={errors.email} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                            id="phone"
-                            type="text"
+                            error={errors.email}
                             required
-                            tabIndex={3}
-                            autoComplete="tel"
+                            autoComplete="email"
+                            disabled={processing}
+                        />
+
+                        <InputField
+                            icon={Phone}
+                            placeholder="Phone number"
                             value={data.phone}
                             onChange={(e) => setData('phone', e.target.value)}
-                            disabled={processing}
-                            placeholder="08xxxxxxxxxx"
-                        />
-                        <InputError message={errors.phone} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="address">Address</Label>
-                        <Input
-                            id="address"
-                            type="text"
+                            error={errors.phone}
                             required
-                            tabIndex={4}
-                            autoComplete="street-address"
+                            autoComplete="tel"
+                            disabled={processing}
+                        />
+
+                        <InputField
+                            icon={MapPin}
+                            placeholder="Address"
                             value={data.address}
                             onChange={(e) => setData('address', e.target.value)}
-                            disabled={processing}
-                            placeholder="Your address"
-                        />
-                        <InputError message={errors.address} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="ktp_photo">KTP Photo</Label>
-                        <Input
-                            id="ktp_photo"
-                            type="file"
+                            error={errors.address}
                             required
-                            tabIndex={5}
+                            autoComplete="street-address"
+                            disabled={processing}
+                        />
+
+                        <InputField
+                            icon={Upload}
+                            type="file"
                             accept="image/*"
                             onChange={(e) => setData('ktp_photo', e.target.files ? e.target.files[0] : null)}
+                            error={errors.ktp_photo}
+                            required
                             disabled={processing}
                         />
-                        <InputError message={errors.ktp_photo} />
-                    </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            tabIndex={6}
-                            autoComplete="new-password"
+                        <InputField
+                            icon={Lock}
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
-                            disabled={processing}
-                            placeholder="Password"
-                        />
-                        <InputError message={errors.password} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">Confirm password</Label>
-                        <Input
-                            id="password_confirmation"
-                            type="password"
+                            error={errors.password}
+                            showPassword={showPassword}
+                            togglePassword={() => setShowPassword(!showPassword)}
                             required
-                            tabIndex={7}
                             autoComplete="new-password"
+                            disabled={processing}
+                        />
+
+                        <InputField
+                            icon={Lock}
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm password"
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
+                            error={errors.password_confirmation}
+                            showPassword={showConfirmPassword}
+                            togglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+                            required
+                            autoComplete="new-password"
                             disabled={processing}
-                            placeholder="Confirm password"
                         />
-                        <InputError message={errors.password_confirmation} />
-                    </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="role">Register as</Label>
-                        <select
-                            id="role"
+                        <SelectField
+                            icon={User}
                             value={data.role}
                             onChange={(e) => setData('role', e.target.value as 'customer' | 'partner')}
-                            className="rounded border px-3 py-2"
+                            error={errors.role}
                             disabled={processing}
                             required
                         >
-                            <option value="customer">Customer</option>
-                            <option value="partner">Partner</option>
-                        </select>
-                        <InputError message={errors.role} className="mt-2" />
+                            <option value="customer">Register as Customer</option>
+                            <option value="partner">Register as Partner</option>
+                        </SelectField>
+
+                        <button
+                            type="submit"
+                            onClick={submit}
+                            disabled={processing}
+                            className="w-full py-4 bg-gradient-to-r from-chart-1 to-chart-2 hover:from-chart-1/90 hover:to-chart-2/90 text-white rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-3 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl mt-6"
+                        >
+                            {processing && <LoaderCircle size={20} className="animate-spin" />}
+                            Create Account
+                        </button>
                     </div>
 
-                    <Button type="submit" className="mt-2 w-full" tabIndex={8} disabled={processing}>
-                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Create account
-                    </Button>
+                    <div className="mt-8 text-center">
+                        <p className="text-muted-foreground text-sm">
+                            Already have an account?{' '}
+                            <TextLink 
+                                href={route('login')} 
+                                className="text-chart-1 hover:text-chart-1/80 font-medium transition-colors"
+                            >
+                                Sign in
+                            </TextLink>
+                        </p>
+                    </div>
                 </div>
-
-                <div className="text-muted-foreground text-center text-sm">
-                    Already have an account?{' '}
-                    <TextLink href={route('login')} tabIndex={9}>
-                        Log in
-                    </TextLink>
-                </div>
-            </form>
-        </AuthLayout>
+            </div>
+        </div>
     );
 }

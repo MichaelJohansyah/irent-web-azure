@@ -6,11 +6,12 @@ use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use \App\Models\User;
+use App\Http\Controllers\OrderController;
 
 // Home
 Route::get('/', fn() => Inertia::render('welcome'))->name('home');
 
-// Public product routes (move these before auth routes)
+// Public product routes 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
@@ -47,6 +48,10 @@ Route::middleware(['auth'])->group(function () {
         })->name('products.add');
         Route::post('dashboard/add-product', [ProductController::class, 'store'])->name('products.store');
     });
+    
+    // Order routes
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 });
 
 // Additional route files
