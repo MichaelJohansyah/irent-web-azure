@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
-import { Link } from "@inertiajs/react";
-import AppSidebarLayout from "@/layouts/app/app-sidebar-layout";
-import { BreadcrumbItem } from "@/types";
+import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
+import { BreadcrumbItem } from '@/types';
+import { Link } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 
 interface Product {
     id: number;
@@ -13,9 +13,9 @@ interface Product {
     max_rent_day: number;
     stock: number;
     image: string;
-    partner?: { 
+    partner?: {
         id: number;
-        name: string; 
+        name: string;
     };
 }
 
@@ -40,33 +40,37 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
     return (
         <AppSidebarLayout breadcrumbs={breadcrumbs}>
-            <div className="w-full h-full p-4">
-                <div className="w-full bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-border/50 flex flex-col md:flex-row gap-8 p-4 md:p-8">
+            <div className="h-full w-full p-4">
+                <div className="bg-card/80 border-border/50 flex w-full flex-col gap-8 rounded-2xl border p-4 shadow-2xl backdrop-blur-sm md:flex-row md:p-8">
                     {/* Product Image Section */}
-                    <div className="flex flex-col items-center w-full md:w-1/2 gap-4">
+                    <div className="flex w-full flex-col items-center gap-4 md:w-1/2">
                         {/* Main Image */}
-                        <div className="w-full aspect-square max-w-[400px] max-h-[400px] bg-gradient-to-br from-muted to-background rounded-xl flex items-center justify-center overflow-hidden relative">
+                        <div className="from-muted to-background relative flex aspect-square max-h-[400px] w-full max-w-[400px] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br">
                             <img
-                                src={product.image ? `/storage/${product.image}` : "/images/products/default.png"}
+                                src={product.image ? `/storage/${product.image}` : '/images/products/default.png'}
                                 alt={product.name}
-                                className="object-cover w-full h-full"
+                                className="h-full w-full object-cover"
                                 style={{ display: 'block' }}
                             />
                         </div>
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex-1 flex flex-col gap-6">
-                        <h1 className="text-3xl font-bold text-foreground leading-tight">{product.name}</h1>
+                    <div className="flex flex-1 flex-col gap-6">
+                        <h1 className="text-foreground text-3xl leading-tight font-bold">{product.name}</h1>
                         <div className="flex items-end gap-3">
-                            <span className="text-3xl font-bold text-primary">
+                            <span className="text-primary text-3xl font-bold">
                                 Rp{product.rent_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </span>
                             <span className="text-muted-foreground">/ day</span>
                         </div>
                         <div className="text-muted-foreground flex gap-4 text-sm">
-                            <span>Color: <span className="text-foreground font-semibold">{product.color}</span></span>
-                            <span>Storage: <span className="text-foreground font-semibold">{product.storage}</span></span>
+                            <span>
+                                Color: <span className="text-foreground font-semibold">{product.color}</span>
+                            </span>
+                            <span>
+                                Storage: <span className="text-foreground font-semibold">{product.storage}</span>
+                            </span>
                         </div>
                         <div className="flex flex-col gap-2 text-sm">
                             <div className="flex gap-2">
@@ -91,48 +95,63 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                         </div>
 
                         {/* Rent Duration */}
-                        <div className="flex items-center gap-4 mt-2">
+                        <div className="mt-2 flex items-center gap-4">
                             <span className="font-semibold">Duration (Days)</span>
-                            <div className="flex items-center border rounded overflow-hidden bg-muted/30">
+                            <div className="bg-muted/30 flex items-center overflow-hidden rounded border">
                                 <button
                                     type="button"
-                                    className="px-3 py-1 text-lg font-bold text-primary disabled:opacity-40"
-                                    onClick={() => setDuration(d => Math.max(1, d - 1))}
+                                    className="text-primary px-3 py-1 text-lg font-bold disabled:opacity-40"
+                                    onClick={() => setDuration((d) => Math.max(1, d - 1))}
                                     disabled={duration <= 1}
-                                >-</button>
-                                <span className="px-4 py-1 min-w-[2rem] text-center">{duration}</span>
+                                >
+                                    -
+                                </button>
+                                <span className="min-w-[2rem] px-4 py-1 text-center">{duration}</span>
                                 <button
                                     type="button"
-                                    className="px-3 py-1 text-lg font-bold text-primary disabled:opacity-40"
-                                    onClick={() => setDuration(d => Math.min(maxDuration, d + 1))}
+                                    className="text-primary px-3 py-1 text-lg font-bold disabled:opacity-40"
+                                    onClick={() => setDuration((d) => Math.min(maxDuration, d + 1))}
                                     disabled={duration >= maxDuration}
-                                >+</button>
+                                >
+                                    +
+                                </button>
                             </div>
-                            <span className="text-xs text-muted-foreground">Max: {maxDuration} days</span>
+                            <span className="text-muted-foreground text-xs">Max: {maxDuration} days</span>
                         </div>
 
                         <div className="flex flex-col text-sm">
-                            <div className="flex justify-between items-center py-2 border-t">
+                            <div className="flex items-center justify-between border-t py-2">
                                 <span className="text-muted-foreground">Default price</span>
                                 <span className="font-semibold">Rp{product.rent_price.toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between items-center py-2 border-t border-b">
+                            <div className="flex items-center justify-between border-t border-b py-2">
                                 <span className="text-muted-foreground">Total price ({duration} days)</span>
-                                <span className="font-bold text-lg">Rp{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                <span className="text-lg font-bold">
+                                    Rp{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </span>
                             </div>
                         </div>
 
                         {/* Buttons */}
-                        <div className="flex gap-2 mt-4">
+                        <div className="mt-4 flex gap-2">
                             <Link
-                                href={route('products.confirm', product.id)}
-                                className="flex-1 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl text-center"
+                                href={route('products.confirm', {
+                                    id: product.id,
+                                    duration: duration,
+                                    totalPrice: totalPrice,
+                                })}
+                                className="from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground flex-1 rounded-lg bg-gradient-to-r py-3 text-center text-lg font-bold shadow-lg transition-all duration-300 hover:shadow-xl"
                             >
                                 Order
                             </Link>
-                            <button className="px-6 py-3 bg-muted/30 hover:bg-muted/50 text-foreground rounded-lg font-semibold transition-all duration-300 flex items-center justify-center">
+                            <button className="bg-muted/30 hover:bg-muted/50 text-foreground flex items-center justify-center rounded-lg px-6 py-3 font-semibold transition-all duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                    />
                                 </svg>
                             </button>
                         </div>

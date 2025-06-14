@@ -29,7 +29,8 @@ class OrderController extends Controller
         // Calculate end date and total price
         $startDate = Carbon::parse($request->start_date);
         $endDate = $startDate->copy()->addDays($request->duration);
-        $totalPrice = $product->rent_price * $request->duration;
+        // Use total_price from request if present, otherwise fallback
+        $totalPrice = $request->has('total_price') ? $request->total_price : ($product->rent_price * $request->duration);
 
         // Create the order
         $order = Order::create([
