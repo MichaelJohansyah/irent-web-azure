@@ -16,7 +16,7 @@ export function AppSidebar() {
         { title: 'Add Product', href: '/dashboard/add-product', icon: MessageCircle },
         { title: 'Check Notification', href: '#', icon: Bell },
         { title: 'Chat', href: '#', icon: MessageCircle },
-        { title: 'Order List', href: '/orders/history', icon: ListOrdered },
+        { title: 'Order List', href: '/orders', icon: ListOrdered },
         { title: 'Switch to Customer', href: '#', icon: Repeat },
     ];
     const adminNavItems = [{ title: 'Manage Unverified Users', href: '/admin/users', icon: Bell }];

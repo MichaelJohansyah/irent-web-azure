@@ -47,6 +47,9 @@ Route::middleware(['auth'])->group(function () {
             return Inertia::render('dashboard/AddProduct');
         })->name('products.add');
         Route::post('dashboard/add-product', [ProductController::class, 'store'])->name('products.store');
+        Route::get('dashboard/edit-product/{id}', [ProductController::class, 'edit'])->name('products.edit');
+        Route::post('dashboard/edit-product/{id}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('dashboard/edit-product/{id}', [ProductController::class, 'destroy'])->name('products.delete');
     });
     
     // Order routes

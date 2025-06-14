@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -14,7 +15,6 @@ class OrderController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'partner_id' => 'required|exists:users,id',
             'duration' => 'required|integer|min:1',
             'start_date' => 'required|date|after_or_equal:today',
         ]);
@@ -33,9 +33,9 @@ class OrderController extends Controller
 
         // Create the order
         $order = Order::create([
-            'customer_id' => auth()->id(),
+            'customer_id' => Auth::user()->id,
             'product_id' => $request->product_id,
-            'partner_id' => $request->partner_id,
+            'partner_id' => $product->partner_id, // Set from product
             'start_date' => $startDate,
             'end_date' => $endDate,
             'duration' => $request->duration,
@@ -49,15 +49,29 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'Order placed successfully!');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['product', 'partner'])
-            ->where('customer_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return Inertia::render('orders/history', [
-            'orders' => $orders
-        ]);
+        $user = Auth::user();
+        if ($user->role === 'partner') {
+            // Show orders for products owned by this partner, only if product exists
+            $orders = Order::with(['product', 'customer'])
+                ->where('partner_id', $user->id)
+                ->whereHas('product')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return Inertia::render('orders/history', [
+                'orders' => $orders
+            ]);
+        } else {
+            // Default: show orders for customer, only if product exists
+            $orders = Order::with(['product', 'partner'])
+                ->where('customer_id', $user->id)
+                ->whereHas('product')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return Inertia::render('orders/history', [
+                'orders' => $orders
+            ]);
+        }
     }
 }
