@@ -11,7 +11,7 @@ interface Product {
     max_rent_day: number;
     stock: number;
     image: string;
-    partner?: { name: string };
+    partner?: { id: number; name: string };
 }
 
 interface ConfirmProps {
