@@ -2,7 +2,7 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, LayoutGrid, ListOrdered, MessageCircle, Repeat } from 'lucide-react';
+import { Bell, LayoutGrid, ListOrdered, MessageCircle } from 'lucide-react';
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
@@ -16,8 +16,7 @@ export function AppSidebar() {
         { title: 'Add Product', href: '/dashboard/add-product', icon: MessageCircle },
         { title: 'Check Notification', href: '#', icon: Bell },
         { title: 'Chat', href: '#', icon: MessageCircle },
-        { title: 'Order List', href: '/orders/history', icon: ListOrdered },
-        { title: 'Switch to Customer', href: '#', icon: Repeat },
+        { title: 'Order List', href: '/orders', icon: ListOrdered },
     ];
     const adminNavItems = [{ title: 'Manage Unverified Users', href: '/admin/users', icon: Bell }];
     const mainNavItems = [
@@ -31,7 +30,6 @@ export function AppSidebar() {
                   { title: 'Chat', href: '#', icon: MessageCircle },
                   { title: 'Order List', href: '/orders', icon: ListOrdered },
                   { title: 'Notification', href: '#', icon: Bell },
-                  { title: 'Switch to Partner', href: '#', icon: Repeat },
               ]
             : []),
         ...(isPartner ? partnerNavItems : []),

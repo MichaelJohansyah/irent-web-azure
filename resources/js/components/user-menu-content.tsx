@@ -23,6 +23,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <UserInfo user={user} showEmail={true} />
                 </div>
+                {/* Removed role text here to avoid duplicate below email */}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

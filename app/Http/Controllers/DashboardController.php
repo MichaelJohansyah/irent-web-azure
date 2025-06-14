@@ -20,8 +20,9 @@ class DashboardController extends Controller
                 'user' => $user,
             ]);
         } elseif ($user->role === 'partner') {
+            $partnerProducts = Product::where('partner_id', $user->id)->get();
             return Inertia::render('dashboard/PartnerDashboard', [
-                'products' => $products,
+                'products' => $partnerProducts,
                 'user' => $user,
             ]);
         } else {

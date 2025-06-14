@@ -9,12 +9,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// Define the Product type
+// Update Product type for image and rent_price
 interface Product {
     id: number;
     name: string;
-    description: string;
-    // Add other fields as needed
+    rent_price: number;
+    image: string;
 }
 
 interface DashboardProps {
@@ -26,23 +26,25 @@ export default function CustomerDashboard({ products }: DashboardProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Customer Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-3">
                     {products.map((product) => (
-                        <div
+                        <Link
                             key={product.id}
-                            className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border"
+                            href={route('products.show', product.id)}
+                            className="group block border border-sidebar-border/70 dark:border-sidebar-border rounded-xl overflow-hidden bg-card shadow hover:shadow-lg transition cursor-pointer h-full"
                         >
-                            <div className="p-4">
-                                <h2 className="font-bold">{product.name}</h2>
-                                <p>{product.description}</p>
-                                <Link
-                                    href={route('products.show', product.id)}
-                                    className="mt-2 inline-block rounded bg-blue-600 px-4 py-2 text-white"
-                                >
-                                    View Details
-                                </Link>
+                            <div className="aspect-video bg-muted flex items-center justify-center">
+                                <img
+                                    src={product.image ? `/storage/${product.image}` : '/images/products/default.png'}
+                                    alt={product.name}
+                                    className="object-contain w-full h-full max-h-40 group-hover:scale-105 transition"
+                                />
                             </div>
-                        </div>
+                            <div className="p-4 flex flex-col gap-2">
+                                <h2 className="font-bold text-lg text-foreground truncate">{product.name}</h2>
+                                <div className="text-primary font-semibold text-base">Rp{product.rent_price?.toLocaleString()}</div>
+                            </div>
+                        </Link>
                     ))}
                 </div>
             </div>

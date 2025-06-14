@@ -1,53 +1,62 @@
-import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-export default function AddProduct() {
+interface Product {
+    id: number;
+    name: string;
+    stock: number;
+    rent_price: number;
+    max_rent_day: number;
+    storage: string;
+    color: string;
+    description: string;
+    image: string;
+}
+
+interface EditProductProps {
+    product: Product;
+}
+
+export default function EditProduct({ product }: EditProductProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        stock: '',
-        rent_price: '',
-        max_rent_day: '',
-        storage: '',
-        color: '',
-        description: '',
+        name: product.name || '',
+        stock: product.stock || '',
+        rent_price: product.rent_price || '',
+        max_rent_day: product.max_rent_day || '',
+        storage: product.storage || '',
+        color: product.color || '',
+        description: product.description || '',
         image: null as File | null,
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        // Check for empty fields including image
-        if (
-            !data.name.trim() ||
-            !data.stock.toString().trim() ||
-            !data.rent_price.toString().trim() ||
-            !data.max_rent_day.toString().trim() ||
-            !data.storage.trim() ||
-            !data.color.trim() ||
-            !data.description.trim() ||
-            !data.image
-        ) {
-            alert('Every information for the product must be filled first before added, including adding product image.');
-            return;
-        }
-        post(route('products.store'), {
+        post(route('products.update', product.id), {
             forceFormData: true,
-            onSuccess: () => reset(),
+            onSuccess: () => reset('image'),
         });
     };
 
+    const handleDelete = () => {
+        if (confirm('Are you sure you want to delete this product?')) {
+            router.delete(route('products.delete', product.id));
+        }
+    };
+
     return (
-        <AppLayout breadcrumbs={[{ title: 'Add Product', href: '/dashboard/add-product' }]}>
-            <Head title="Add Product" />
+        <AppLayout breadcrumbs={[{ title: 'Edit Product', href: `/dashboard/edit-product/${product.id}` }]}>
+            <Head title="Edit Product" />
             <form onSubmit={submit} className="flex flex-col gap-8 p-8 md:flex-row">
                 {/* Image upload */}
                 <div className="flex w-full flex-col items-center md:w-1/3">
                     <div className="bg-muted mb-4 flex aspect-square w-full items-center justify-center rounded-lg">
                         {data.image ? (
                             <img src={URL.createObjectURL(data.image)} alt="Preview" className="h-full w-full rounded-lg object-contain" />
+                        ) : product.image ? (
+                            <img src={`/storage/${product.image}`} alt={product.name} className="h-full w-full rounded-lg object-contain" />
                         ) : (
                             <span className="text-muted-foreground">Product Image Preview</span>
                         )}
@@ -66,7 +75,7 @@ export default function AddProduct() {
                             variant="secondary"
                             onClick={() => document.getElementById('product-image')?.click()}
                         >
-                            Add Product Image
+                            Change Product Image
                         </Button>
                     </label>
                 </div>
@@ -75,12 +84,10 @@ export default function AddProduct() {
                     <div>
                         <label className="mb-1 block font-semibold">Product Name</label>
                         <Input value={data.name} onChange={(e) => setData('name', e.target.value)} required disabled={processing} />
-                        <InputError message={errors.name} className="mt-1" />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold">Stock</label>
                         <Input type="number" value={data.stock} onChange={(e) => setData('stock', e.target.value)} required disabled={processing} />
-                        <InputError message={errors.stock} className="mt-1" />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold">Rent Price (1 day)</label>
@@ -91,7 +98,6 @@ export default function AddProduct() {
                             required
                             disabled={processing}
                         />
-                        <InputError message={errors.rent_price} className="mt-1" />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold">Max Rent Duration (max 30 days)</label>
@@ -102,17 +108,14 @@ export default function AddProduct() {
                             required
                             disabled={processing}
                         />
-                        <InputError message={errors.max_rent_day} className="mt-1" />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold">Storage</label>
                         <Input value={data.storage} onChange={(e) => setData('storage', e.target.value)} required disabled={processing} />
-                        <InputError message={errors.storage} className="mt-1" />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold">Color</label>
                         <Input value={data.color} onChange={(e) => setData('color', e.target.value)} required disabled={processing} />
-                        <InputError message={errors.color} className="mt-1" />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold">Product Description</label>
@@ -123,11 +126,13 @@ export default function AddProduct() {
                             required
                             disabled={processing}
                         />
-                        <InputError message={errors.description} className="mt-1" />
                     </div>
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-4 flex flex-col justify-end gap-2 md:flex-row">
                         <Button type="submit" disabled={processing} className="w-full md:w-auto">
-                            Add Product
+                            Save Changes
+                        </Button>
+                        <Button type="button" variant="destructive" onClick={handleDelete} className="w-full md:w-auto">
+                            Delete Product
                         </Button>
                     </div>
                 </div>
