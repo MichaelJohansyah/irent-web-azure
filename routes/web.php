@@ -6,21 +6,25 @@ use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use \App\Models\User;
+use App\Http\Controllers\OrderController;
 
 // Home
 Route::get('/', fn() => Inertia::render('welcome'))->name('home');
+
+// Public product routes 
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
 // Authenticated routes
 Route::middleware(['auth'])->group(function () {
     // Dashboard (role-based)
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Product detail
-    Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show');
+    // Product confirm (requires auth)
+    Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
 
     // Admin-only routes
     Route::middleware(['admin'])->group(function () {
-        // User management page (renders in main content area)
         Route::get('admin/users', function () {
             $user = Auth::user();
             $users = User::all();
@@ -44,12 +48,11 @@ Route::middleware(['auth'])->group(function () {
         })->name('products.add');
         Route::post('dashboard/add-product', [ProductController::class, 'store'])->name('products.store');
     });
+    
+    // Order routes
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 });
-
-// Public product routes
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
 
 // Additional route files
 require __DIR__.'/settings.php';
