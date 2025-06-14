@@ -27,9 +27,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     const [duration, setDuration] = useState(1);
     const maxDuration = product.max_rent_day;
 
-    // Calculate total price based on duration
+    // Calculate total price based on duration with 10% increment for each additional day
     const totalPrice = useMemo(() => {
-        return product.rent_price * duration;
+        // total = base price * (1 + 0.1 * (n-1))
+        return product.rent_price * (1 + 0.1 * (duration - 1));
     }, [product.rent_price, duration]);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -39,16 +40,17 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
     return (
         <AppSidebarLayout breadcrumbs={breadcrumbs}>
-            <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] p-4">
-                <div className="w-full max-w-4xl bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-border/50 flex flex-col md:flex-row gap-8 p-8">
+            <div className="w-full h-full p-4">
+                <div className="w-full bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-border/50 flex flex-col md:flex-row gap-8 p-4 md:p-8">
                     {/* Product Image Section */}
                     <div className="flex flex-col items-center w-full md:w-1/2 gap-4">
                         {/* Main Image */}
-                        <div className="w-full aspect-square bg-gradient-to-br from-muted to-background rounded-xl flex items-center justify-center overflow-hidden relative">
+                        <div className="w-full aspect-square max-w-[400px] max-h-[400px] bg-gradient-to-br from-muted to-background rounded-xl flex items-center justify-center overflow-hidden relative">
                             <img
                                 src={product.image ? `/storage/${product.image}` : "/images/products/default.png"}
                                 alt={product.name}
-                                className="object-contain w-full h-full max-h-[400px] max-w-[400px]"
+                                className="object-cover w-full h-full"
+                                style={{ display: 'block' }}
                             />
                         </div>
                     </div>
@@ -56,17 +58,16 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     {/* Product Info */}
                     <div className="flex-1 flex flex-col gap-6">
                         <h1 className="text-3xl font-bold text-foreground leading-tight">{product.name}</h1>
-                        <div className="text-muted-foreground flex gap-4 text-sm">
-                            <span>Color: <span className="text-foreground font-semibold">{product.color}</span></span>
-                            <span>Storage: <span className="text-foreground font-semibold">{product.storage}</span></span>
-                        </div>
                         <div className="flex items-end gap-3">
                             <span className="text-3xl font-bold text-primary">
                                 Rp{product.rent_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </span>
                             <span className="text-muted-foreground">/ day</span>
                         </div>
-
+                        <div className="text-muted-foreground flex gap-4 text-sm">
+                            <span>Color: <span className="text-foreground font-semibold">{product.color}</span></span>
+                            <span>Storage: <span className="text-foreground font-semibold">{product.storage}</span></span>
+                        </div>
                         <div className="flex flex-col gap-2 text-sm">
                             <div className="flex gap-2">
                                 <span className="text-muted-foreground">Max Rent Duration:</span>
@@ -112,12 +113,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
                         <div className="flex flex-col text-sm">
                             <div className="flex justify-between items-center py-2 border-t">
-                                <span className="text-muted-foreground">Price per day</span>
+                                <span className="text-muted-foreground">Default price</span>
                                 <span className="font-semibold">Rp{product.rent_price.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between items-center py-2 border-t border-b">
-                                <span className="text-muted-foreground">Total ({duration} days)</span>
-                                <span className="font-bold text-lg">Rp{totalPrice.toLocaleString()}</span>
+                                <span className="text-muted-foreground">Total price ({duration} days)</span>
+                                <span className="font-bold text-lg">Rp{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         </div>
 
