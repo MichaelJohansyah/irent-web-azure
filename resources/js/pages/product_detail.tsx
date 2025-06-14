@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { useState, useMemo } from "react";
+import { router } from "@inertiajs/react";
 import AppSidebarLayout from "@/layouts/app/app-sidebar-layout";
 import { BreadcrumbItem } from "@/types";
 
@@ -13,7 +13,10 @@ interface Product {
     max_rent_day: number;
     stock: number;
     image: string;
-    partner?: { name: string };
+    partner?: { 
+        id: number;
+        name: string; 
+    };
 }
 
 interface ProductDetailProps {
@@ -21,19 +24,29 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
-    const [quantity, setQuantity] = useState(1);
-    const maxQuantity = Math.min(product.stock, 99);
+    const [duration, setDuration] = useState(1);
+    const maxDuration = product.max_rent_day;
+
+    // Calculate total price based on duration
+    const totalPrice = useMemo(() => {
+        return product.rent_price * duration;
+    }, [product.rent_price, duration]);
+
+    const handleOrder = () => {
+        router.get(route('orders.confirm'), {
+            data: {
+                product_id: product.id,
+                partner_id: product.partner?.id,
+                duration: duration,
+                start_date: new Date().toISOString().split('T')[0]
+            },
+            preserveState: true
+        });
+    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Products', href: '/products' },
         { title: product.name, href: `/products/${product.id}` },
-    ];
-
-    // Thumbnail images (contoh sementara menggunakan gambar yang sama)
-    const thumbnails = [
-        product.image ? `/storage/${product.image}` : "/images/products/default.png",
-        product.image ? `/storage/${product.image}` : "/images/products/default.png",
-        product.image ? `/storage/${product.image}` : "/images/products/default.png"
     ];
 
     return (
@@ -49,21 +62,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                                 alt={product.name}
                                 className="object-contain w-full h-full max-h-[400px] max-w-[400px]"
                             />
-                        </div>
-                        {/* Thumbnail Row */}
-                        <div className="flex justify-center gap-2 w-full">
-                            {thumbnails.map((thumb, index) => (
-                                <div 
-                                    key={index}
-                                    className="w-24 h-24 bg-gradient-to-br from-muted to-background rounded-lg flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border border-border/50"
-                                >
-                                    <img
-                                        src={thumb}
-                                        alt={`${product.name} thumbnail ${index + 1}`}
-                                        className="object-contain w-full h-full p-2"
-                                    />
-                                </div>
-                            ))}
                         </div>
                     </div>
 
@@ -103,30 +101,44 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                             <p className="text-muted-foreground text-sm">{product.description}</p>
                         </div>
 
-                        {/* Quantity */}
+                        {/* Rent Duration */}
                         <div className="flex items-center gap-4 mt-2">
-                            <span className="font-semibold">Quantity</span>
+                            <span className="font-semibold">Duration (Days)</span>
                             <div className="flex items-center border rounded overflow-hidden bg-muted/30">
                                 <button
                                     type="button"
                                     className="px-3 py-1 text-lg font-bold text-primary disabled:opacity-40"
-                                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                    disabled={quantity <= 1}
+                                    onClick={() => setDuration(d => Math.max(1, d - 1))}
+                                    disabled={duration <= 1}
                                 >-</button>
-                                <span className="px-4 py-1 min-w-[2rem] text-center">{quantity}</span>
+                                <span className="px-4 py-1 min-w-[2rem] text-center">{duration}</span>
                                 <button
                                     type="button"
                                     className="px-3 py-1 text-lg font-bold text-primary disabled:opacity-40"
-                                    onClick={() => setQuantity(q => Math.min(maxQuantity, q + 1))}
-                                    disabled={quantity >= maxQuantity}
+                                    onClick={() => setDuration(d => Math.min(maxDuration, d + 1))}
+                                    disabled={duration >= maxDuration}
                                 >+</button>
                             </div>
-                            <span className="text-xs text-muted-foreground">Max: {maxQuantity} pieces</span>
+                            <span className="text-xs text-muted-foreground">Max: {maxDuration} days</span>
+                        </div>
+
+                        <div className="flex flex-col text-sm">
+                            <div className="flex justify-between items-center py-2 border-t">
+                                <span className="text-muted-foreground">Price per day</span>
+                                <span className="font-semibold">Rp{product.rent_price.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-t border-b">
+                                <span className="text-muted-foreground">Total ({duration} days)</span>
+                                <span className="font-bold text-lg">Rp{totalPrice.toLocaleString()}</span>
+                            </div>
                         </div>
 
                         {/* Buttons */}
                         <div className="flex gap-2 mt-4">
-                            <button className="flex-1 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                            <button 
+                                onClick={handleOrder}
+                                className="flex-1 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                            >
                                 Order
                             </button>
                             <button className="px-6 py-3 bg-muted/30 hover:bg-muted/50 text-foreground rounded-lg font-semibold transition-all duration-300 flex items-center justify-center">
