@@ -22,8 +22,6 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
     const [quantity, setQuantity] = useState(1);
     const maxQuantity = Math.min(product.stock, 99);
-    const discount = 11;
-    const originalPrice = product.rent_price / (1 - discount / 100);
 
     return (
         <>
