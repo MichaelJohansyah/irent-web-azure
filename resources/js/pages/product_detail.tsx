@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { router } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import AppSidebarLayout from "@/layouts/app/app-sidebar-layout";
 import { BreadcrumbItem } from "@/types";
 
@@ -31,18 +31,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     const totalPrice = useMemo(() => {
         return product.rent_price * duration;
     }, [product.rent_price, duration]);
-
-    const handleOrder = () => {
-        router.get(route('orders.confirm'), {
-            data: {
-                product_id: product.id,
-                partner_id: product.partner?.id,
-                duration: duration,
-                start_date: new Date().toISOString().split('T')[0]
-            },
-            preserveState: true
-        });
-    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Products', href: '/products' },
@@ -135,12 +123,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
                         {/* Buttons */}
                         <div className="flex gap-2 mt-4">
-                            <button 
-                                onClick={handleOrder}
-                                className="flex-1 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                            <Link
+                                href={route('products.confirm', product.id)}
+                                className="flex-1 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl text-center"
                             >
                                 Order
-                            </button>
+                            </Link>
                             <button className="px-6 py-3 bg-muted/30 hover:bg-muted/50 text-foreground rounded-lg font-semibold transition-all duration-300 flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
