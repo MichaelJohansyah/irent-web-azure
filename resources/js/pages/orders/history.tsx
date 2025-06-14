@@ -20,6 +20,11 @@ interface HistoryProps {
     orders: Order[];
 }
 
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID'); // Indonesian format: dd/mm/yyyy
+};
+
 export default function History({ orders }: HistoryProps) {
     const getStatusBadgeColor = (status: Order['status']) => {
         const colors = {
@@ -48,8 +53,8 @@ export default function History({ orders }: HistoryProps) {
                             <div className="flex-1 flex flex-col gap-1">
                                 <h3 className="text-lg font-bold text-foreground mb-1">{order.product ? order.product.name : 'Product not found'}</h3>
                                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                                    <span>{new Date(order.start_date).toLocaleDateString()} - {new Date(order.end_date).toLocaleDateString()}</span>
-                                    <span>{order.duration} days</span>
+                                    <span>{formatDate(order.start_date)} - {formatDate(order.end_date)}</span>
+                                    <span>{order.duration} day{order.duration > 1 ? 's' : ''}</span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className="font-bold text-primary text-base">Rp{order.total_price.toLocaleString()}</span>
