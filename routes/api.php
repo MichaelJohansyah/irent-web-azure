@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Resources\UserResource;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
+
 
 
 Route::get('/user', function (Request $request) {
@@ -32,3 +35,8 @@ Route::post('/login', function (Request $request) {
 
     return response()->json(['token' => $token, 'user' => new UserResource($user)]);
 });
+
+Route::get('/products', [ProductController::class, 'apiIndex']);
+
+Route::get('/orders', [OrderController::class, 'apiIndex']);
+Route::post('/orders', [OrderController::class, 'apiStore']);

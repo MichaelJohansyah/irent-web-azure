@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -121,6 +122,13 @@ class ProductController extends Controller
         }
         $product->delete();
         return redirect()->route('dashboard')->with('success', 'Product deleted successfully!');
+    }
+
+    // API endpoint: return all products as JSON
+    public function apiIndex()
+    {
+        $products = Product::with('partner')->get();
+        return ProductResource::collection($products);
     }
 
     // (Optional) Add methods for create, store, edit, update, destroy as needed

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Http\Resources\OrderResource;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -74,5 +75,33 @@ class OrderController extends Controller
                 'orders' => $orders
             ]);
         }
+    }
+    public function apiIndex()
+    {
+        $orders = \App\Models\Order::with(['product', 'customer', 'partner'])->get();
+        return OrderResource::collection($orders);
+    }
+
+    // API endpoint: store order from mobile app
+    public function apiStore(Request $request)
+    {
+        // Accept JSON and always return JSON
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'customer_id' => 'required|exists:users,id',
+            'partner_id' => 'required|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'duration' => 'required|integer|min:1',
+            'total_price' => 'required|numeric|min:0',
+            'status' => 'required|string',
+        ]);
+
+        $order = Order::create($validated);
+        $order->load(['product', 'customer', 'partner']);
+        return response()->json([
+            'success' => true,
+            'order' => new OrderResource($order)
+        ], 201);
     }
 }

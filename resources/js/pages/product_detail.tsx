@@ -136,7 +136,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                         <div className="mt-4 flex gap-2">
                             {product.stock > 0 ? (
                                 <Link
-                                    href={route('products.confirm', product.id)}
+                                    href={route('products.confirm', {
+                                        id: product.id,
+                                        duration: duration,
+                                        totalPrice: totalPrice,
+                                    })}
                                     className="from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground flex-1 rounded-lg py-3 text-center text-lg font-bold shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-r"
                                 >
                                     Order
