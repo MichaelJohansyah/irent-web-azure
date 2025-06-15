@@ -134,17 +134,22 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
                         {/* Buttons */}
                         <div className="mt-4 flex gap-2">
-                            <Link
-                                href={route('products.confirm', {
-                                    id: product.id,
-                                    duration: duration,
-                                    totalPrice: totalPrice,
-                                })}
-                                className="from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground flex-1 rounded-lg bg-gradient-to-r py-3 text-center text-lg font-bold shadow-lg transition-all duration-300 hover:shadow-xl"
-                            >
-                                Order
-                            </Link>
-                            <button className="bg-muted/30 hover:bg-muted/50 text-foreground flex items-center justify-center rounded-lg px-6 py-3 font-semibold transition-all duration-300">
+                            {product.stock > 0 ? (
+                                <Link
+                                    href={route('products.confirm', product.id)}
+                                    className="from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground flex-1 rounded-lg py-3 text-center text-lg font-bold shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-r"
+                                >
+                                    Order
+                                </Link>
+                            ) : (
+                                <button
+                                    disabled
+                                    className="flex-1 rounded-lg bg-gray-400 py-3 text-center text-lg font-bold text-gray-100 opacity-60 cursor-not-allowed"
+                                >
+                                    Out of Stock
+                                </button>
+                            )}
+                            <button className="text-foreground bg-muted/30 hover:bg-muted/50 flex items-center justify-center rounded-lg px-6 py-3 font-semibold transition-all duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path
                                         strokeLinecap="round"
