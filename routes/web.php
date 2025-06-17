@@ -46,6 +46,9 @@ Route::middleware(['auth'])->group(function () {
             }
             return redirect()->back();
         })->name('admin.users.delete');
+
+        Route::get('admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders');
+        Route::post('admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
     });
 
     // Partner-only routes
@@ -57,11 +60,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('dashboard/edit-product/{id}', [ProductController::class, 'edit'])->name('products.edit');
         Route::post('dashboard/edit-product/{id}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('dashboard/edit-product/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+        Route::get('/orders/partner-list', [\App\Http\Controllers\OrderController::class, 'partnerOrderList'])->name('orders.partnerList');
     });
     
     // Order routes
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/orders/{order}/partner-confirm', [OrderController::class, 'partnerConfirm'])->name('orders.partnerConfirm');
+    Route::post('/orders/{order}/partner-cancel', [OrderController::class, 'partnerCancel'])->name('orders.partnerCancel');
+    Route::post('/orders/{order}/partner-pickedup', [\App\Http\Controllers\OrderController::class, 'partnerPickedUp'])->name('orders.partnerPickedUp');
+    Route::post('/orders/{order}/partner-finish', [\App\Http\Controllers\OrderController::class, 'partnerFinish'])->name('orders.partnerFinish');
 });
 
 // Additional route files

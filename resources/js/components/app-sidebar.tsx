@@ -16,9 +16,12 @@ export function AppSidebar() {
         { title: 'Add Product', href: '/dashboard/add-product', icon: MessageCircle },
         { title: 'Check Notification', href: '#', icon: Bell },
         { title: 'Chat', href: '#', icon: MessageCircle },
-        { title: 'Order List', href: '/orders', icon: ListOrdered },
+        { title: 'Order List', href: '/orders/partner-list', icon: ListOrdered }, // changed link
     ];
-    const adminNavItems = [{ title: 'Manage Unverified Users', href: '/admin/users', icon: Bell }];
+    const adminNavItems = [
+        { title: 'Manage Unverified Users', href: '/admin/users', icon: Bell },
+        { title: 'Manage Order', href: '/admin/orders', icon: ListOrdered }, // new button
+    ];
     const mainNavItems = [
         {
             title: 'Dashboard',

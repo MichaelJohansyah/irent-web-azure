@@ -104,4 +104,81 @@ class OrderController extends Controller
             'order' => new OrderResource($order)
         ], 201);
     }
+    public function adminIndex()
+    {
+        $orders = Order::with(['product', 'customer', 'partner'])->orderBy('created_at', 'desc')->get();
+        return Inertia::render('admin/ManageOrders', [
+            'orders' => $orders
+        ]);
+    }
+    public function updateStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|in:waiting,ready,rented,return_now,finished'
+        ]);
+        $order->status = $request->status;
+        $order->save();
+        return redirect()->back()->with('success', 'Order status updated.');
+    }
+    public function partnerConfirm(Request $request, Order $order)
+    {
+        $request->validate([
+            'pickup_address' => 'required|string',
+            'contact_number' => 'required|string',
+            'pickup_time' => 'required|string',
+            'notes' => 'nullable|string',
+        ]);
+        $order->pickup_address = $request->pickup_address;
+        $order->contact_number = $request->contact_number;
+        $order->pickup_time = $request->pickup_time;
+        $order->notes = $request->notes;
+        // Only set status to 'ready' if requested and only from 'waiting'
+        if ($request->has('status') && $request->status === 'ready' && $order->status === 'waiting') {
+            $order->status = 'ready';
+        }
+        $order->save();
+        return response()->json(['success' => true]);
+    }
+
+    public function partnerCancel(Request $request, Order $order)
+    {
+        $order->status = 'canceled';
+        $order->save();
+        return response()->json(['success' => true]);
+    }
+    public function partnerOrderList(Request $request)
+    {
+        $user = $request->user();
+        $orders = \App\Models\Order::with(['product', 'customer'])
+            ->where('partner_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return \Inertia\Inertia::render('orders/partner-list', [
+            'orders' => $orders
+        ]);
+    }
+
+    // Partner marks order as picked up (status: rented)
+    public function partnerPickedUp(Request $request, Order $order)
+    {
+        // Only allow if current status is 'ready'
+        if ($order->status !== 'ready') {
+            return response()->json(['success' => false, 'message' => 'Order is not ready for pickup.'], 400);
+        }
+        $order->status = 'rented';
+        $order->save();
+        return response()->json(['success' => true]);
+    }
+
+    // Partner finishes order (status: finished)
+    public function partnerFinish(Request $request, Order $order)
+    {
+        // Only allow if current status is 'return_now'
+        if ($order->status !== 'return_now') {
+            return response()->json(['success' => false, 'message' => 'Order is not ready to be finished.'], 400);
+        }
+        $order->status = 'finished';
+        $order->save();
+        return response()->json(['success' => true]);
+    }
 }

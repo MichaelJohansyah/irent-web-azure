@@ -15,6 +15,10 @@ class Order extends Model
     'duration',
     'total_price',
     'status',
+    'pickup_address',
+    'contact_number',
+    'pickup_time',
+    'notes',
 ];
 
 // Each order belongs to a customer (user)
