@@ -39,6 +39,13 @@ Route::middleware(['auth'])->group(function () {
             $user->save();
             return redirect()->back();
         })->name('admin.users.verify');
+
+        Route::delete('admin/users/{user}', function (User $user) {
+            if (in_array($user->role, ['partner', 'customer'])) {
+                $user->delete();
+            }
+            return redirect()->back();
+        })->name('admin.users.delete');
     });
 
     // Partner-only routes
