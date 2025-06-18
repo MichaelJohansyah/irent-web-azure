@@ -19,12 +19,12 @@ export function AppSidebar() {
         { title: 'Order List', href: '/orders/partner-list', icon: ListOrdered }, // changed link
     ];
     const adminNavItems = [
-        { title: 'Manage Unverified Users', href: '/admin/users', icon: Bell },
-        { title: 'Manage Order', href: '/admin/orders', icon: ListOrdered }, // new button
+        { title: 'Manage Users', href: '/admin/users', icon: Bell },
+        { title: 'Manage Order', href: '/admin/orders', icon: ListOrdered },
     ];
     const mainNavItems = [
         {
-            title: 'Dashboard',
+            title: 'User Feedback', // Renamed from 'Dashboard'
             href: '/dashboard',
             icon: LayoutGrid,
         },

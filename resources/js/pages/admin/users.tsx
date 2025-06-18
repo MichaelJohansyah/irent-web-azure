@@ -1,5 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 interface User {
     id: number;
@@ -17,6 +18,7 @@ interface AdminUsersProps {
 }
 
 export default function AdminUsers({ users }: AdminUsersProps) {
+    const [search, setSearch] = useState('');
     const handleVerify = (userId: number) => {
         if (confirm('Verify this user?')) {
             router.post(`/admin/users/${userId}/verify`);
@@ -27,6 +29,7 @@ export default function AdminUsers({ users }: AdminUsersProps) {
             router.delete(`/admin/users/${userId}`);
         }
     };
+    const filteredUsers = users.filter((user) => user.name.toLowerCase().includes(search.toLowerCase()));
     return (
         <AppLayout breadcrumbs={[{ title: 'Manage Users', href: '/admin/users' }]}>
             {' '}
@@ -34,6 +37,13 @@ export default function AdminUsers({ users }: AdminUsersProps) {
             <div className="p-8">
                 <Head title="Manage Users" />
                 <h1 className="mb-4 text-2xl font-bold">Manage Users</h1>
+                <input
+                    type="text"
+                    placeholder="Search by name..."
+                    className="mb-4 rounded border px-3 py-2"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
                 <table className="w-full border text-left">
                     <thead>
                         <tr>
@@ -48,7 +58,7 @@ export default function AdminUsers({ users }: AdminUsersProps) {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
+                        {filteredUsers.map((user) => (
                             <tr key={user.id} className="border-t">
                                 <td>{user.name}</td>
                                 <td>{user.role}</td>
