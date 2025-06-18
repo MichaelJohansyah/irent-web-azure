@@ -11,6 +11,9 @@ interface Order {
     customer?: {
         name: string;
     };
+    partner?: {
+        name: string;
+    };
     start_date: string;
     end_date: string;
     duration: number;
@@ -20,6 +23,7 @@ interface Order {
     contact_number?: string;
     pickup_time?: string;
     notes?: string;
+    return_information?: string; // add this field for summary
 }
 
 interface HistoryProps {
@@ -34,12 +38,12 @@ const formatDate = (dateString: string) => {
 export default function History({ orders }: HistoryProps) {
     const getStatusBadgeColor = (status: Order['status']) => {
         const colors = {
-            waiting: 'bg-yellow-100 text-yellow-800',
-            ready: 'bg-blue-100 text-blue-800',
-            rented: 'bg-green-100 text-green-800',
-            return_now: 'bg-red-100 text-red-800',
-            finished: 'bg-gray-100 text-gray-800',
-            canceled: 'bg-red-100 text-red-800',
+            waiting: 'bg-gray-800 text-white', // dark grey
+            ready: 'bg-blue-600 text-white',   // blue
+            rented: 'bg-green-600 text-white', // green
+            return_now: 'bg-yellow-400 text-gray-900', // yellow
+            finished: 'bg-white text-gray-900 border border-gray-300', // white
+            canceled: 'bg-red-600 text-white', // red
         };
         return colors[status];
     };
@@ -104,8 +108,12 @@ export default function History({ orders }: HistoryProps) {
                     {orders.map((order) => (
                         <div
                             key={order.id}
-                            className={`bg-card text-foreground border-sidebar-border/70 flex flex-col items-center gap-4 rounded-xl border p-4 shadow md:flex-row ${order.status === 'ready' ? 'hover:bg-muted/40 cursor-pointer' : ''}`}
-                            onClick={() => (order.status === 'ready' ? setSelectedOrder(order) : undefined)}
+                            className={`bg-card text-foreground border-sidebar-border/70 flex flex-col items-center gap-4 rounded-xl border p-4 shadow md:flex-row ${order.status === 'ready' || order.status === 'return_now' || order.status === 'finished' ? 'hover:bg-muted/40 cursor-pointer' : ''}`}
+                            onClick={() =>
+                                order.status === 'ready' || order.status === 'return_now' || order.status === 'finished'
+                                    ? setSelectedOrder(order)
+                                    : undefined
+                            }
                         >
                             {order.product ? (
                                 <img
@@ -142,25 +150,51 @@ export default function History({ orders }: HistoryProps) {
                     {orders.length === 0 && <div className="py-8 text-center text-gray-500">No orders found.</div>}
                 </div>
                 {/* Customer info modal (for customers) */}
-                <Dialog open={!!selectedOrder && selectedOrder.status === 'ready'} onOpenChange={handleClose}>
+                <Dialog
+                    open={
+                        !!selectedOrder &&
+                        (selectedOrder.status === 'ready' || selectedOrder.status === 'return_now' || selectedOrder.status === 'finished')
+                    }
+                    onOpenChange={handleClose}
+                >
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Pickup Information</DialogTitle>
+                            <DialogTitle>{selectedOrder?.status === 'finished' ? 'Order Summary' : 'Pickup Information'}</DialogTitle>
                         </DialogHeader>
-                        <div className="flex flex-col gap-3">
-                            <div>
-                                <span className="font-semibold">Pickup Address:</span> {selectedOrder?.pickup_address || '-'}
+                        {selectedOrder?.status === 'finished' ? (
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <span className="font-semibold">Customer Name:</span> {selectedOrder?.customer?.name || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Partner Name:</span> {selectedOrder?.partner?.name || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Return Information:</span> {selectedOrder?.return_information || '-'}
+                                </div>
                             </div>
-                            <div>
-                                <span className="font-semibold">Contact Number:</span> {selectedOrder?.contact_number || '-'}
+                        ) : (
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <span className="font-semibold">Pickup Address:</span> {selectedOrder?.pickup_address || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Contact Number:</span> {selectedOrder?.contact_number || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Pickup Time:</span> {selectedOrder?.pickup_time || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Additional Notes:</span> {selectedOrder?.notes || '-'}
+                                </div>
+                                {selectedOrder?.status === 'return_now' && (
+                                    <div className="mt-4 rounded border border-yellow-300 bg-yellow-100 p-3 text-yellow-900">
+                                        <div className="mb-1 font-bold">Your rent duration has ended. Please return the iPhone now.</div>
+                                        <div>Please return the phone on time and in good condition because if it is not you will get charged.</div>
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <span className="font-semibold">Pickup Time:</span> {selectedOrder?.pickup_time || '-'}
-                            </div>
-                            <div>
-                                <span className="font-semibold">Additional Notes:</span> {selectedOrder?.notes || '-'}
-                            </div>
-                        </div>
+                        )}
                         <DialogFooter>
                             <DialogClose asChild>
                                 <button className="rounded bg-blue-600 px-4 py-2 text-white">Close</button>

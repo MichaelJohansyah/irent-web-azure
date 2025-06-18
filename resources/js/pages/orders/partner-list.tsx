@@ -11,15 +11,19 @@ interface Order {
     customer?: {
         name: string;
     };
+    partner?: {
+        name: string;
+    };
     start_date: string;
     end_date: string;
     duration: number;
     total_price: number;
-    status: 'waiting' | 'ready' | 'rented' | 'return_now' | 'finished' | 'canceled';
+    status: 'waiting' | 'ready' | 'rented' | 'return_now' | 'canceled' | 'finished';
     pickup_address?: string;
     contact_number?: string;
     pickup_time?: string;
     notes?: string;
+    return_information?: string; // new field for return summary
 }
 
 interface PartnerOrdersProps {
@@ -66,6 +70,7 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
         contact_number: '',
         pickup_time: '',
         notes: '',
+        return_information: '', // new field
     });
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
@@ -115,6 +120,7 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
             contact_number: order.contact_number || '',
             pickup_time: order.pickup_time || '',
             notes: order.notes || '',
+            return_information: order.return_information || '', // new field
         });
         setError('');
     };
@@ -135,6 +141,13 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
             },
         });
     };
+    // Reusable headers for fetch requests
+    const apiHeaders = {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': csrfToken,
+    };
+
     // Separate confirm and save changes logic
     const handleConfirmOrder = async () => {
         if (!form.pickup_address || !form.contact_number || !form.pickup_time) {
@@ -174,7 +187,9 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
                 method: 'POST',
                 headers: apiHeaders,
                 credentials: 'same-origin',
-                body: JSON.stringify({ ...form }), // No status field
+                body: JSON.stringify({
+                    ...form, // includes return_information
+                }),
             });
             const data = await res.json();
             if (!res.ok || !data.success) {
@@ -245,7 +260,10 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
                 method: 'POST',
                 headers: apiHeaders,
                 credentials: 'same-origin',
-                body: JSON.stringify({ status: 'finished' }),
+                body: JSON.stringify({
+                    status: 'finished',
+                    return_information: form.return_information, // send return_information
+                }),
             });
             const data = await res.json();
             if (!res.ok || !data.success) {
@@ -262,20 +280,19 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
         setProcessing(false);
     };
 
-    // Reusable headers for fetch requests
-    const apiHeaders = {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': csrfToken,
-    };
-
     return (
         <AppLayout breadcrumbs={[{ title: 'Partner Orders', href: '/orders/partner-list' }]}>
             <div className="p-8">
                 <h1 className="mb-6 text-2xl font-semibold">Partner Orders</h1>
                 <div className="space-y-4">
                     {orders.map((order) => {
-                        const clickable = order.status === 'waiting' || order.status === 'ready' || order.status === 'rented';
+                        // Allow clickable for waiting, ready, rented, return_now, and finished
+                        const clickable =
+                            order.status === 'waiting' ||
+                            order.status === 'ready' ||
+                            order.status === 'rented' ||
+                            order.status === 'return_now' ||
+                            order.status === 'finished';
                         return (
                             <div
                                 key={order.id}
@@ -309,7 +326,21 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
                                     <div className="mt-1 flex items-center gap-2">
                                         <span className="text-primary text-base font-bold">Rp{order.total_price.toLocaleString()}</span>
                                         <span
-                                            className={`ml-2 inline-block rounded-full px-2 py-1 text-xs font-medium ${order.status === 'waiting' ? 'bg-yellow-100 text-yellow-800' : order.status === 'ready' ? 'bg-blue-100 text-blue-800' : ''}`}
+                                            className={`ml-2 inline-block rounded-full px-2 py-1 text-xs font-medium ${
+                                                order.status === 'waiting'
+                                                    ? 'bg-gray-800 text-white'
+                                                    : order.status === 'ready'
+                                                        ? 'bg-blue-600 text-white'
+                                                        : order.status === 'rented'
+                                                            ? 'bg-green-600 text-white'
+                                                            : order.status === 'return_now'
+                                                                ? 'bg-yellow-400 text-gray-900'
+                                                                : order.status === 'finished'
+                                                                    ? 'bg-white text-gray-900 border border-gray-300'
+                                                                    : order.status === 'canceled'
+                                                                        ? 'bg-red-600 text-white'
+                                                                        : ''
+                                            }`}
                                         >
                                             {order.status}
                                         </span>
@@ -328,52 +359,88 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
                 <Dialog open={!!selectedOrder} onOpenChange={handleClose}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>{selectedOrder?.status === 'waiting' ? 'Confirm Order' : 'Edit Pickup Info'}</DialogTitle>
+                            <DialogTitle>
+                                {selectedOrder?.status === 'waiting'
+                                    ? 'Confirm Order'
+                                    : selectedOrder?.status === 'finished'
+                                      ? 'Order Summary'
+                                      : 'Edit Pickup Info'}
+                            </DialogTitle>
                         </DialogHeader>
-                        <div className="flex flex-col gap-3">
-                            <input
-                                name="pickup_address"
-                                value={form.pickup_address}
-                                onChange={handleChange}
-                                placeholder="Pickup Address"
-                                className="rounded border p-2"
-                                required
-                            />
-                            <input
-                                name="contact_number"
-                                value={form.contact_number}
-                                onChange={handleChange}
-                                placeholder="Contact Number"
-                                className="rounded border p-2"
-                                required
-                            />
-                            <input
-                                name="pickup_time"
-                                value={form.pickup_time}
-                                onChange={handleChange}
-                                placeholder="Pickup Time"
-                                className="rounded border p-2"
-                                required
-                            />
-                            <textarea
-                                name="notes"
-                                value={form.notes}
-                                onChange={handleChange}
-                                placeholder="Additional Notes"
-                                className="rounded border p-2"
-                            />
-                            {error && <div className="text-sm text-red-500">{error}</div>}
-                        </div>
+                        {selectedOrder?.status === 'finished' ? (
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <span className="font-semibold">Customer Name:</span> {selectedOrder?.customer?.name || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Partner Name:</span> {selectedOrder?.partner?.name || '-'}
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Return Information:</span> {selectedOrder?.return_information || '-'}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-3">
+                                <input
+                                    name="pickup_address"
+                                    value={form.pickup_address}
+                                    onChange={handleChange}
+                                    placeholder="Pickup Address"
+                                    className="rounded border p-2"
+                                    required
+                                    disabled={['finished', 'canceled'].includes(selectedOrder?.status as string)}
+                                />
+                                <input
+                                    name="contact_number"
+                                    value={form.contact_number}
+                                    onChange={handleChange}
+                                    placeholder="Contact Number"
+                                    className="rounded border p-2"
+                                    required
+                                    disabled={['finished', 'canceled'].includes(selectedOrder?.status as string)}
+                                />
+                                <input
+                                    name="pickup_time"
+                                    value={form.pickup_time}
+                                    onChange={handleChange}
+                                    placeholder="Pickup Time"
+                                    className="rounded border p-2"
+                                    required
+                                    disabled={['finished', 'canceled'].includes(selectedOrder?.status as string)}
+                                />
+                                <textarea
+                                    name="notes"
+                                    value={form.notes}
+                                    onChange={handleChange}
+                                    placeholder="Additional Notes"
+                                    className="rounded border p-2"
+                                    disabled={['finished', 'canceled'].includes(selectedOrder?.status as string)}
+                                />
+                                {selectedOrder?.status === 'return_now' && (
+                                    <textarea
+                                        name="return_information"
+                                        value={form.return_information}
+                                        onChange={handleChange}
+                                        placeholder="Return Information (e.g. Was the phone returned late? Was the condition bad? Write any summary here.)"
+                                        className="rounded border p-2"
+                                        rows={3}
+                                    />
+                                )}
+                                {error && <div className="text-sm text-red-500">{error}</div>}
+                            </div>
+                        )}
                         <DialogFooter>
-                            <button
-                                onClick={() => confirmAction('cancel', handleCancel)}
-                                className="flex cursor-pointer items-center justify-center rounded bg-red-500 px-4 py-2 text-white"
-                                disabled={processing && showConfirm.action === 'cancel'}
-                            >
-                                {processing && showConfirm.action === 'cancel' ? <span className="loader mr-2"></span> : null}
-                                Cancel Order
-                            </button>
-                            {selectedOrder?.status === 'waiting' ? (
+                            {selectedOrder?.status !== 'finished' && (
+                                <button
+                                    onClick={() => confirmAction('cancel', handleCancel)}
+                                    className="flex cursor-pointer items-center justify-center rounded bg-red-500 px-4 py-2 text-white"
+                                    disabled={processing && showConfirm.action === 'cancel'}
+                                >
+                                    {processing && showConfirm.action === 'cancel' ? <span className="loader mr-2"></span> : null}
+                                    Cancel Order
+                                </button>
+                            )}
+                            {selectedOrder?.status === 'waiting' && (
                                 <button
                                     onClick={() => confirmAction('confirm', handleConfirmOrder)}
                                     className="flex cursor-pointer items-center justify-center rounded bg-blue-600 px-4 py-2 text-white"
@@ -382,7 +449,8 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
                                     {processing && showConfirm.action === 'confirm' ? <span className="loader mr-2"></span> : null}
                                     Confirm
                                 </button>
-                            ) : (
+                            )}
+                            {selectedOrder?.status !== 'finished' && selectedOrder?.status !== 'waiting' && (
                                 <button
                                     onClick={() => confirmAction('edit', handleSaveChanges)}
                                     className="flex cursor-pointer items-center justify-center rounded bg-blue-600 px-4 py-2 text-white"
@@ -410,6 +478,11 @@ export default function PartnerOrders({ orders }: PartnerOrdersProps) {
                                 >
                                     {processing && showConfirm.action === 'finish' ? <span className="loader mr-2"></span> : null}
                                     Finish Order
+                                </button>
+                            )}
+                            {selectedOrder?.status === 'finished' && (
+                                <button onClick={handleClose} className="rounded bg-blue-600 px-4 py-2 text-white">
+                                    Close
                                 </button>
                             )}
                         </DialogFooter>

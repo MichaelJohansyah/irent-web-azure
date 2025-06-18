@@ -24,6 +24,11 @@ class OrderResource extends JsonResource
             'duration' => $this->duration,
             'total_price' => $this->total_price,
             'status' => $this->status,
+            'pickup_address' => $this->pickup_address,
+            'contact_number' => $this->contact_number,
+            'pickup_time' => $this->pickup_time,
+            'notes' => $this->notes,
+            'return_information' => $this->return_information,
             'product' => $this->whenLoaded('product', function() {
                 return [
                     'id' => $this->product->id,

@@ -127,11 +127,15 @@ class OrderController extends Controller
             'contact_number' => 'required|string',
             'pickup_time' => 'required|string',
             'notes' => 'nullable|string',
+            'return_information' => 'nullable|string', // allow this field
         ]);
         $order->pickup_address = $request->pickup_address;
         $order->contact_number = $request->contact_number;
         $order->pickup_time = $request->pickup_time;
         $order->notes = $request->notes;
+        if ($request->has('return_information')) {
+            $order->return_information = $request->return_information;
+        }
         // Only set status to 'ready' if requested and only from 'waiting'
         if ($request->has('status') && $request->status === 'ready' && $order->status === 'waiting') {
             $order->status = 'ready';
@@ -176,6 +180,9 @@ class OrderController extends Controller
         // Only allow if current status is 'return_now'
         if ($order->status !== 'return_now') {
             return response()->json(['success' => false, 'message' => 'Order is not ready to be finished.'], 400);
+        }
+        if ($request->has('return_information')) {
+            $order->return_information = $request->return_information;
         }
         $order->status = 'finished';
         $order->save();
