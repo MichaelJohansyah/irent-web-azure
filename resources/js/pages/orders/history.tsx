@@ -1,7 +1,7 @@
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
 import { useState } from 'react';
-import { Search } from 'lucide-react'; // Add this import
+import { Search } from 'lucide-react';
 
 interface Order {
     id: number;
@@ -37,12 +37,34 @@ const formatDate = (dateString: string) => {
 };
 
 export default function History({ orders }: HistoryProps) {
-    const [searchTerm, setSearchTerm] = useState('');  // Add this state
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Add the filter function
-    const filteredOrders = orders.filter((order) =>
-        order.product?.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredOrders = orders.filter((order) => {
+        const searchLower = searchTerm.toLowerCase();
+        
+        // Search in product name
+        const matchesName = order.product?.name.toLowerCase().includes(searchLower);
+        
+        // Search in dates
+        const startDate = formatDate(order.start_date);
+        const endDate = formatDate(order.end_date);
+        const matchesDate = startDate.includes(searchLower) || endDate.includes(searchLower);
+
+        // Search in status
+        const statusMap = {
+            'waiting': 'waiting',
+            'ready': 'ready',
+            'rented': 'rented',
+            'return': 'return_now',
+            'finished': 'finished',
+            'canceled': 'canceled'
+        };
+        const matchesStatus = Object.keys(statusMap).some(key => 
+            key.includes(searchLower) && order.status === statusMap[key as keyof typeof statusMap]
+        );
+
+        return matchesName || matchesDate || matchesStatus;
+    });
 
     const getStatusBadgeColor = (status: Order['status']) => {
         const colors = {
@@ -118,7 +140,7 @@ export default function History({ orders }: HistoryProps) {
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                         type="text"
-                        placeholder="Search orders by product name..."
+                        placeholder="Search by product name, date (dd/mm/yyyy), or status..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full rounded-lg border border-input bg-background px-9 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
