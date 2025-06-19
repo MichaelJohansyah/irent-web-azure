@@ -1,6 +1,7 @@
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
 import { useState } from 'react';
+import { Search } from 'lucide-react'; // Add this import
 
 interface Order {
     id: number;
@@ -36,6 +37,13 @@ const formatDate = (dateString: string) => {
 };
 
 export default function History({ orders }: HistoryProps) {
+    const [searchTerm, setSearchTerm] = useState('');  // Add this state
+
+    // Add the filter function
+    const filteredOrders = orders.filter((order) =>
+        order.product?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const getStatusBadgeColor = (status: Order['status']) => {
         const colors = {
             waiting: 'bg-gray-800 text-white', // dark grey
@@ -104,8 +112,21 @@ export default function History({ orders }: HistoryProps) {
         <AppLayout breadcrumbs={[{ title: 'Order List', href: '/orders' }]}>
             <div className="p-8">
                 <h1 className="mb-6 text-2xl font-semibold">Order List</h1>
+                
+                {/* Add the search bar */}
+                <div className="relative mb-6">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                        type="text"
+                        placeholder="Search orders by product name..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full rounded-lg border border-input bg-background px-9 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    />
+                </div>
+
                 <div className="space-y-4">
-                    {orders.map((order) => (
+                    {filteredOrders.map((order) => (
                         <div
                             key={order.id}
                             className={`bg-card text-foreground border-sidebar-border/70 flex flex-col items-center gap-4 rounded-xl border p-4 shadow md:flex-row ${order.status === 'ready' || order.status === 'return_now' || order.status === 'finished' ? 'hover:bg-muted/40 cursor-pointer' : ''}`}
@@ -147,7 +168,11 @@ export default function History({ orders }: HistoryProps) {
                             </div>
                         </div>
                     ))}
-                    {orders.length === 0 && <div className="py-8 text-center text-gray-500">No orders found.</div>}
+                    {filteredOrders.length === 0 && (
+                        <div className="py-8 text-center text-gray-500">
+                            {searchTerm ? 'No orders found matching your search.' : 'No orders found.'}
+                        </div>
+                    )}
                 </div>
                 {/* Customer info modal (for customers) */}
                 <Dialog
