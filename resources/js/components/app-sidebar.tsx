@@ -15,7 +15,7 @@ export function AppSidebar() {
     const partnerNavItems = [
         { title: 'Add Product', href: '/dashboard/add-product', icon: MessageCircle },
         { title: 'Check Notification', href: '#', icon: Bell },
-        { title: 'Chat', href: '#', icon: MessageCircle },
+        { title: 'Chat', href: '/chatify', icon: MessageCircle },
         { title: 'Order List', href: '/orders/partner-list', icon: ListOrdered }, // changed link
     ];
     const adminNavItems = [
@@ -30,7 +30,7 @@ export function AppSidebar() {
         },
         ...(isCustomer
             ? [
-                  { title: 'Chat', href: '#', icon: MessageCircle },
+                  { title: 'Chat', href: '/chatify', icon: MessageCircle },
                   { title: 'Order List', href: '/orders', icon: ListOrdered },
                   { title: 'Notification', href: '#', icon: Bell },
               ]
