@@ -28,6 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
+    Route::get('/feedback/confirmation', [FeedbackController::class, 'confirmation'])
+    ->name('feedback.confirmation');
+
     // Admin-only routes
     Route::middleware(['admin'])->group(function () {
         Route::get('admin/users', function () {

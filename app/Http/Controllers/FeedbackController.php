@@ -29,7 +29,7 @@ class FeedbackController extends Controller
             'content' => $request->content,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Feedback submitted!');
+        return redirect()->route('feedback.confirmation');
     }
 
     // Admin: List all feedback
@@ -39,5 +39,10 @@ class FeedbackController extends Controller
         return Inertia::render('admin/FeedbackList', [
             'feedback' => $feedback,
         ]);
+    }
+
+    public function confirmation()
+    {
+    return Inertia::render('feedback/confirmation'); // or wherever you put the component
     }
 }

@@ -1,20 +1,54 @@
 import { useForm } from '@inertiajs/react';
-import React from 'react';
-import { MessageCircle, Send, User, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MessageCircle, Send, User, FileText, CheckCircle, X } from 'lucide-react';
 
 export default function Create() {
-  const { data, setData, post, processing, errors } = useForm({
+  const { data, setData, post, processing, errors, wasSuccessful } = useForm({
     subject: '',
     content: '',
   });
+  
+  const [showNotification, setShowNotification] = useState(false);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     post(route('feedback.store'));
   }
 
+  // Show notification when form submission is successful
+  useEffect(() => {
+    if (wasSuccessful) {
+      setShowNotification(true);
+      // Auto-hide notification after 5 seconds
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [wasSuccessful]);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+      {/* Success Notification */}
+      {showNotification && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 fade-in duration-300">
+          <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 max-w-sm">
+            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="font-semibold">Feedback Sent!</p>
+              <p className="text-sm text-green-100">Thank you for your feedback.</p>
+            </div>
+            <button
+              onClick={() => setShowNotification(false)}
+              className="text-green-200 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12">
