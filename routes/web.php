@@ -11,7 +11,7 @@ use App\Http\Controllers\FeedbackController;
 
 // Home
 Route::get('/', fn() => Inertia::render('welcome'))->name('home');
-
+//hello
 // Public product routes 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
