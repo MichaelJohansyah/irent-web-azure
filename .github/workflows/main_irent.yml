@@ -18,10 +18,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          extensions: mbstring, xml, curl, zip, gd, bcmath, intl,
+            opcache, fileinfo, exif, mysqli, pdo_pgsql, redis, imagick
+          ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=512M
+          tools: composer:v2.5, php-cs-fixer:v3.10, phpstan:1.10, psalm:5.0
+          coverage: none
 
       - name: Check if composer.json exists
         id: check_files
