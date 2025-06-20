@@ -17,6 +17,7 @@ export function AppSidebar() {
         { title: 'Check Notification', href: '#', icon: Bell },
         { title: 'Chat', href: '/chatify', icon: MessageCircle },
         { title: 'Order List', href: '/orders/partner-list', icon: ListOrdered }, // changed link
+        { title: 'Send Feedback', href: '/feedback', icon: MessageCircle },
     ];
     const adminNavItems = [
         { title: 'Manage Users', href: '/admin/users', icon: Bell },
