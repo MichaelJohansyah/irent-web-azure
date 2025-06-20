@@ -24,19 +24,26 @@ export function AppSidebar() {
     ];
     const mainNavItems = [
         {
-            title: 'User Feedback', // Renamed from 'Dashboard'
+            title: 'Dashboard',
             href: '/dashboard',
             icon: LayoutGrid,
         },
         ...(isCustomer
             ? [
+                  { title: 'Send Feedback', href: '/feedback', icon: MessageCircle },
                   { title: 'Chat', href: '/chatify', icon: MessageCircle },
                   { title: 'Order List', href: '/orders', icon: ListOrdered },
                   { title: 'Notification', href: '#', icon: Bell },
               ]
             : []),
+        ...(isAdmin
+            ? [
+                  { title: 'Manage Users', href: '/admin/users', icon: Bell },
+                  { title: 'Manage Order', href: '/admin/orders', icon: ListOrdered },
+                  { title: 'User Feedback', href: '/admin/feedback', icon: MessageCircle },
+              ]
+            : []),
         ...(isPartner ? partnerNavItems : []),
-        ...(isAdmin ? adminNavItems : []),
     ];
 
     return (

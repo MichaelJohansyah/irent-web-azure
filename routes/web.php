@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use \App\Models\User;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\FeedbackController;
 
 // Home
 Route::get('/', fn() => Inertia::render('welcome'))->name('home');
@@ -22,6 +23,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Product confirm (requires auth)
     Route::get('/products/{id}/confirm', [ProductController::class, 'confirm'])->name('products.confirm');
+
+    // Feedback submission (for all authenticated users)
+    Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
     // Admin-only routes
     Route::middleware(['admin'])->group(function () {
@@ -49,6 +54,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders');
         Route::post('admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+
+        // Feedback management
+        Route::get('/admin/feedback', [FeedbackController::class, 'index'])->name('admin.feedback');
     });
 
     // Partner-only routes
